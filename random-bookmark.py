@@ -34,7 +34,7 @@ def get_folder_urls(folder, target_urls):
             if item["type"] == "url":
                 target_urls.add(item["url"])
             elif item["type"] == "folder":
-                recursive_get_urls(item)
+                get_folder_urls(item, target_urls)
 
 
 
