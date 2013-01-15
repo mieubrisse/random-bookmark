@@ -2,7 +2,8 @@
 
 import json
 import os.path
-import os.environ
+import platform
+from os import environ
 import webbrowser
 from sys import exit
 from random import randint 
@@ -17,17 +18,13 @@ BOOKMARKS_FILEPATH = ""
 if BOOKMARKS_FILEPATH == "" or BOOKMARKS_FILEPATH == None:
     system = platform.system()
     if system == "Linux":
-        bookmark_filepath_guess = "~/.config/google-chrome/Default/Bookmarks"
+        BOOKMARKS_FILEPATH = "~/.config/google-chrome/Default/Bookmarks"
     elif system == "Windows":
         windows_username = os.environ.get("USERNAME")
-        bookmark_filepath_guess = "C:\Documents and Settings\" + windows_username + "User Name\Local Settings\Application Data\Chromium\User Data\Default"
+        BOOKMARKS_FILEPATH  = "C:\\\Documents and Settings\\" + windows_username + "User Name\\Local Settings\\Application Data\\Chromium\\User Data\\Default"
     else:
         print("Unable to determine Chrome bookmarks filepath; please specify manually")
         exit()
-
-
-
-
 
 """
 Given a list of items from the bookmark bar and a set of folder names to search for, add all URL
@@ -64,14 +61,22 @@ def get_folder_urls(folder, target_urls):
 
 # Parse Chrome Bookmarks file into object
 BOOKMARKS_FILEPATH = os.path.expanduser(BOOKMARKS_FILEPATH)
-bookmarks_fp = open(BOOKMARKS_FILEPATH)
+try:
+    bookmarks_fp = open(BOOKMARKS_FILEPATH)
+except IOError:
+    print("Unable to open Chrome bookmark file; ensure that the filepath is correctly specified")
+    exit()
 bookmarks = json.load(bookmarks_fp)
 bookmarks_bar = bookmarks["roots"]["bookmark_bar"]
 bookmarks_fp.close()
 
 # Parse 'target folders' file into object
 TARGET_FOLDERS_FILEPATH = os.path.expanduser(TARGET_FOLDERS_FILEPATH)
-target_folders_fp = open(TARGET_FOLDERS_FILEPATH)
+try:
+    target_folders_fp = open(TARGET_FOLDERS_FILEPATH)
+except IOError:
+    print("Unable to open file specifying bookmark folders to use; ensure that the filepath is correctly specified")
+    exit()
 target_folders = json.load(target_folders_fp)
 target_folders_fp.close()
 
