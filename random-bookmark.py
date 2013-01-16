@@ -1,31 +1,25 @@
 #!/usr/bin/python
 
+"""    IF YOU DO NOT FILL THESE VARS IN, THE SCRIPT WILL ATTEMPT TO GUESS THEM     """
+""" ============================================================================== """
+# Filepath to JSON file containing names of bookmark folders whose bookmarks will be used in random selection
+TARGET_FOLDERS_FILEPATH = ""
+
+# Filepath to JSON file Chrome stores its Bookmarks in
+BOOKMARKS_FILEPATH = ""
+""" ============================================================================== """
+
+
+
+import webbrowser
 import json
 import os.path
-import platform
 from os import environ
-import webbrowser
+import platform
 from sys import exit
 from random import randint 
 
-# Filepath to JSON file containing names of bookmark folders to use
-TARGET_FOLDERS_FILEPATH = "~/.random-bookmark-folders.json"
-
-# Filepath to JSON file Chrome stores Bookmarks in
-BOOKMARKS_FILEPATH = ""
-
-# Try to guess filepath to Chrome bookmarks if none specified
-if BOOKMARKS_FILEPATH == "" or BOOKMARKS_FILEPATH == None:
-    system = platform.system()
-    if system == "Linux":
-        BOOKMARKS_FILEPATH = "~/.config/google-chrome/Default/Bookmarks"
-    elif system == "Windows":
-        windows_username = os.environ.get("USERNAME")
-        BOOKMARKS_FILEPATH  = "C:\\\Documents and Settings\\" + windows_username + "User Name\\Local Settings\\Application Data\\Chromium\\User Data\\Default"
-    else:
-        print("Unable to determine Chrome bookmarks filepath; please specify manually")
-        exit()
-
+""" ==== HELPER FUNCTIONS ================================================================== """
 """
 Given a list of items from the bookmark bar and a set of folder names to search for, add all URL
 items under the target folders to the given set
@@ -59,6 +53,32 @@ def get_folder_urls(folder, target_urls):
             elif item["type"] == "folder":
                 get_folder_urls(item, target_urls)
 
+
+
+""" ====== MAIN CODE ================================================================ """
+# Try to guess target folders filepath if not specified
+system = platform.system()
+windows_username = os.environ.get("USERNAME")
+if TARGET_FOLDERS_FILEPATH == "" or TARGET_FOLDERS_FILEPATH == None:
+    if system == "Linux":
+        TARGET_FOLDERS_FILEPATH = "~/.random-bookmark-folders.json"
+    elif system == "Windows":
+        TARGET_FOLDERS_FILEPATH = "C:\\Users\\" + windows_username + "\\random-bookmark-folders.json"
+    else:
+        print("Unable to guess path to file specifying bookmark folders to use")
+        exit()
+
+# Try to guess filepath to Chrome bookmarks if none specified
+if BOOKMARKS_FILEPATH == "" or BOOKMARKS_FILEPATH == None:
+    if system == "Linux":
+        BOOKMARKS_FILEPATH = "~/.config/google-chrome/Default/Bookmarks"
+    elif system == "Windows":
+        windows_username = os.environ.get("USERNAME")
+        BOOKMARKS_FILEPATH  = "C:\\Documents and Settings\\" + windows_username + "\\Local Settings\\Application Data\\Chromium\\User Data\\Default"
+    else:
+        print("Unable to guess Chrome bookmarks filepath; please specify manually")
+        exit()
+
 # Parse Chrome Bookmarks file into object
 BOOKMARKS_FILEPATH = os.path.expanduser(BOOKMARKS_FILEPATH)
 try:
@@ -69,6 +89,9 @@ except IOError:
 bookmarks = json.load(bookmarks_fp)
 bookmarks_bar = bookmarks["roots"]["bookmark_bar"]
 bookmarks_fp.close()
+# Exit if user's bookmark bar doesn't have bookmarks
+if "children" not in bookmarks_bar:
+    exit()
 
 # Parse 'target folders' file into object
 TARGET_FOLDERS_FILEPATH = os.path.expanduser(TARGET_FOLDERS_FILEPATH)
@@ -80,15 +103,11 @@ except IOError:
 target_folders = json.load(target_folders_fp)
 target_folders_fp.close()
 
-# Do nothing if no bookmarks found
-if "children" not in bookmarks_bar:
-    exit()
-
 # Generate set of URLs to select from randomly
 target_urls = set()
 get_target_urls(bookmarks_bar["children"], target_folders, target_urls)
 if len(target_urls) == 0:
-    print ("No bookmarks selected")
+    print ("No bookmarks to pull from; ensure your target folders are spelled correctly and they contain bookmarks")
     exit()
 
 # Choose a random element from the target URL set and open in Chrome
