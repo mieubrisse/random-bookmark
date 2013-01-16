@@ -74,7 +74,7 @@ if BOOKMARKS_FILEPATH == "" or BOOKMARKS_FILEPATH == None:
         BOOKMARKS_FILEPATH = "~/.config/google-chrome/Default/Bookmarks"
     elif system == "Windows":
         windows_username = os.environ.get("USERNAME")
-        BOOKMARKS_FILEPATH  = "C:\\Documents and Settings\\" + windows_username + "\\Local Settings\\Application Data\\Chromium\\User Data\\Default"
+        BOOKMARKS_FILEPATH  = "C:\\Users\\" + windows_username + "\\AppData\\Local\\Google\\Chrome\\User Data\\Default\\Bookmarks"
     else:
         print("Unable to guess Chrome bookmarks filepath; please specify manually")
         exit()
