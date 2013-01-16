@@ -5,6 +5,7 @@ I've set the script to run on my startup, so now every time I log in Chrome load
 
 ## Setup
 <i>Tested with Python 2.7.3 on Windows 7 and Ubuntu 12.04</i>  
+
 You will need to define a JSON file listing the names of the Chrome bookmark folders you want to randomly choose from, like the example below.
 If you need help with the syntax, check out [the JSON site]("http://www.json.org/").  
 ```json
@@ -27,7 +28,7 @@ The script will do some simple guesswork based on your OS to determine the path 
 # Filepath to JSON file Chrome stores its Bookmarks in
 BOOKMARKS_FILEPATH = "~/.config/google-chrome/Default/Bookmarks"
 ```
-Now that everything's set up, you can open random bookmarks by running the script!
+Running the script will now open a random bookmark from the desired folders.
 
 ## Troubleshooting
 <b>Can't open the Chrome bookmark file</b>  
@@ -36,5 +37,5 @@ Try manually specifying the Chrome bookmark file path
 <b>Can't open the JSON file of folder names</b>  
 Double-check that the path you specified is correct   
 <br/>
-<b>No bookmark is opened when the script is run</b>  
+<b>No bookmark is opened</b>  
 Ensure that the names of the desired folders are properly spelled and the folders have bookmarks in them
