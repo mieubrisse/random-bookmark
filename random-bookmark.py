@@ -9,15 +9,13 @@ TARGET_FOLDERS_FILEPATH = ""
 BOOKMARKS_FILEPATH = ""
 """ ============================================================================== """
 
-
-
 import webbrowser
 import json
 import os.path
 from os import environ
 import platform
 from sys import exit
-from random import randint 
+from random import sample
 
 """ ==== HELPER FUNCTIONS ================================================================== """
 """
@@ -103,7 +101,7 @@ except IOError:
 target_folders = json.load(target_folders_fp)
 target_folders_fp.close()
 
-# Generate set of URLs to select from randomly
+# Generate set of URLs to select from
 target_urls = set()
 get_target_urls(bookmarks_bar["children"], target_folders, target_urls)
 if len(target_urls) == 0:
@@ -111,13 +109,5 @@ if len(target_urls) == 0:
     exit()
 
 # Choose a random element from the target URL set and open in Chrome
-random_bookmark_index = randint(1, len(target_urls))
-counter = 1
-for url in target_urls:
-    if counter == random_bookmark_index:
-        selected_url = url
-        break
-    counter += 1
-if selected_url == None:
-    raise ValueError("Unable to select random bookmark")
+selected_url = sample(target_urls, 1).pop()
 webbrowser.open(selected_url)
